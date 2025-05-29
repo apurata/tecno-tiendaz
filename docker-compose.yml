@@ -1,26 +1,20 @@
-version: '3.1'
-
 services:
 
   wordpress:
-    # build: php7.0/
-    image: wordpress:5.5.1-php7.2-apache
+    image: wordpress
     restart: always
     ports:
       - 8080:80
-    depends_on:
-      - "db"
     environment:
       WORDPRESS_DB_HOST: db
       WORDPRESS_DB_USER: exampleuser
       WORDPRESS_DB_PASSWORD: examplepass
       WORDPRESS_DB_NAME: exampledb
     volumes:
-      - ./plugins:/var/www/html/wp-content/plugins
-      - wp_content:/var/www/html/wp-content
+      - ./wordpress:/var/www/html
 
   db:
-    image: mysql:5.7
+    image: mysql:8.0
     restart: always
     environment:
       MYSQL_DATABASE: exampledb
@@ -28,8 +22,8 @@ services:
       MYSQL_PASSWORD: examplepass
       MYSQL_RANDOM_ROOT_PASSWORD: '1'
     volumes:
-      - wp_mysql:/var/lib/mysql
+      - ./db:/var/lib/mysql
 
 volumes:
-  wp_mysql:
-  wp_content:
+  wordpress:
+  db:
