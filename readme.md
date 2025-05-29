@@ -1,50 +1,105 @@
-# Get woocommerce
+# WordPress with WooCommerce and Apurata Integration
 
-	WOOCOMMERCE_VERSION=4.2.0
-	mkdir -p plugins
-	wget https://downloads.wordpress.org/plugin/woocommerce.${WOOCOMMERCE_VERSION}.zip -O /tmp/temp.zip \
-		&& unzip -q /tmp/temp.zip -d ./plugins/ \
-		&& rm /tmp/temp.zip
+This repository contains a Docker-based setup for WordPress with WooCommerce and Apurata payment gateway integration.
 
-# Get woocommerce-apurata
+## Setup Instructions
 
-	(cd plugins; git clone git@github.com:apurata/woocommerce-apurata-payment-gateway.git)
+### 1. Running the Application
 
-# Run in prd
+#### Development Environment
+```bash
+# Start the development environment
+./run_dev.sh
+# Access at: http://localhost:8080/
+```
 
-	docker-compose up -d
-	# Go to: http://woocommerce-demo-1515033668.us-west-2.elb.amazonaws.com/
+#### Production Environment
+```bash
+# Start the production environment
+docker-compose up -d
+```
 
-# Run in dev
+### 2. Install WordPress
 
-	./run_dev.sh
-	# Go to http://localhost:8080/
+Follow the WordPress installation instructions:
+1. Select Spanish language
+2. Configure timezone for Peru
+3. Complete site information
 
+### 3. Install WooCommerce
 
-# FEATURE LIST
+1. Go to "Plugins" and click "Add New"
+2. Search for "WooCommerce" and install the first option
 
-* By default work with https only. You have to manually allow for http
-* Validate requests with secret token
-* Hide Apurata payment button in the following cases:
-	* HTTPS not being used, and HTTP not manually enabled
-	* Currency != PEN
-	* Amount not in the right range
-* Autocomplete Apurata funnel with order details as name, email, phone
+   You can visit the official website: https://woocommerce.com/
 
-# PROBLEM WITH VOLUMES
+    <img src="./static/img/woocomerce_plugin.png" alt="Woo plugin" height="200">
 
-Lo que sucede es /var/www/data es un volúmen. Y la primera vez que se corre el
-container, todo wordpress se copia a este volúmen. El problema es que al montar otro volúmen dentro
-de este volúmen (para tener el plugin disponible como volúmen), las carpetas padre se crean con
-owner=root. Esto pasa porque el volúmen /var/www/data está vacío la primera vez que se ejecuta. Por
-eso, la primera ejecución debe ser sin el volúmen del plugin y las subsiguientes ya pueden ser sin
-eso.
+3. Activate the WooCommerce plugin
+4. Follow the setup wizard
+5. Verify your store at http://localhost:8080/
 
-En el caso de un deploy, no podemos tener el volúmen definido en el yml de producción, puesto
-que tendríamos el problema de los permisos, así que lo que hacemos es que cada vez que se hace un
-deployment, se copia nuevamente la carpeta a dentro del volúmen /var/www/html.
+### 4. Install aCuotaz Plugin
 
-En caso de tener problemas. Puedes correr el siguiente comando para resetear los volúmenes:
+1. Add your user to the www-data group to edit files:
+```bash
+sudo adduser myuser www-data
+```
 
-	docker-compose down -v
+2. Restart your console to apply changes
+
+3. Clone the plugin repository:
+```bash
+cd wordpress/wp-content/plugins
+git clone https://github.com/apurata/woocommerce-acuotaz-payment-gateway.git
+```
+
+4. Activate the plugin:
+   - Go to "Plugins"
+   - Search for "WooCommerce aCuotaz Apurata Payment Gateway"
+   - Click "Activate"
+
+5. Configure the plugin:
+   - Go to plugin "Settings"
+   - Check the "Enable HTTP" checkbox
+   - Request and configure:
+     - Client ID
+     - Secret Token
+
+## Features
+
+* HTTPS by default (HTTP must be manually enabled)
+* Request validation with secret token
+* Apurata payment button visibility rules:
+  * Hidden when HTTPS is not used (unless HTTP is manually enabled)
+  * Hidden when currency is not PEN
+  * Hidden when amount is outside the valid range
+* Automatic form population in Apurata funnel with:
+  - Name
+  - Email
+  - Phone
+
+## Important Notes
+
+### Volume Management
+
+The application uses Docker volumes for persistent storage:
+- `/var/www/data` is the volume where WordPress files are stored
+
+### Troubleshooting
+
+If you encounter volume-related issues, you can reset them with:
+```bash
+docker-compose down -v
+```
+
+## Environment Configuration
+
+The application uses the following environment variables:
+- Database host: `WORDPRESS_DB_HOST`
+- Database user: `WORDPRESS_DB_USER`
+- Database password: `WORDPRESS_DB_PASSWORD`
+- Database name: `WORDPRESS_DB_NAME`
+
+Default values are set in the docker-compose.yml file.
 
