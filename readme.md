@@ -1,10 +1,7 @@
 # Get woocommerce
-
+ 	Download woocommerce zip and install it in the wordpress interface
 	WOOCOMMERCE_VERSION=4.2.0
-	mkdir -p plugins
-	wget https://downloads.wordpress.org/plugin/woocommerce.${WOOCOMMERCE_VERSION}.zip -O /tmp/temp.zip \
-		&& unzip -q /tmp/temp.zip -d ./plugins/ \
-		&& rm /tmp/temp.zip
+	wget https://downloads.wordpress.org/plugin/woocommerce.${WOOCOMMERCE_VERSION}.zip
 
 # Get woocommerce-apurata
 
