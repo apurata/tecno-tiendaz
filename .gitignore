@@ -6,8 +6,8 @@
 *.zip
 
 # Docker compose volumes
-html/
-mysql/
+wordpress/
+db/
 plugins/
 woocommerce-apurata-payment-gateway/
 
